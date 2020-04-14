@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Arm</string>
+    <string name="bend_wrist">Bend Wrist</string>
+    <string name="rotate_base">Rotate Base</string>
+    <string name="bend_shoulder">Bend Shoulder</string>
+    <string name="bend_elbow">Bend Elbow</string>
+    <string name="tighten_grip">Tighten Grip</string>
+    <string name="rotate_wrist">Rotate Wrist</string>
+    <string name="emergency_stop">Emergency Stop</string>
+    <string name="grab_candy">Grab Candy</string>
+</resources>
