@@ -13,27 +13,20 @@ import android.os.AsyncTask
 import android.os.AsyncTask.execute
 import android.util.Log
 import org.w3c.dom.Text
-
+import kotlinx.coroutines.*
 import java.io.IOException
 import android.widget.Toast
-
-
-
-
-
-
-
 
 class MainActivity : AppCompatActivity() {
 
     private val comm = Comm()
     private var packet = comm.getBasePacket()
-    private var wristRotate = 128
+    private var wristRotate = 512
     private var wristBend = 128
     private var elbowBend = 128
     private var shoulderBend = 128
     private var baseRotate = 128
-    private var gripperTightness = 0
+    private var gripperTightness = 512
     private var progress: ProgressDialog? = null
     var myBluetooth: BluetoothAdapter? = null
     var btSocket: BluetoothSocket? = null
@@ -48,6 +41,12 @@ class MainActivity : AppCompatActivity() {
         address = newint.getStringExtra(DeviceList.EXTRA_ADDRESS)
 
         ConnectBT().execute()
+
+        GlobalScope.launch{
+            while(true) {
+                sendSignal()
+            }
+        }
 
         setContentView(R.layout.activity_main)
         wristDecrease.setOnClickListener {
@@ -96,11 +95,11 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    private fun sendSignal(bytes: ByteArray) {
+    suspend private fun sendSignal() {
         val btSocket = btSocket
         if (btSocket != null) {
             try {
-                btSocket.getOutputStream().write(bytes)
+                btSocket.getOutputStream().write(packet)
             } catch (e: IOException) {
                 msg("Error sending")
             }
@@ -116,87 +115,80 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun increaseWristRotate(){
-        wristRotate += 4
-        if(wristRotate > 256) wristRotate = 256
+        wristRotate += 50
+        if(wristRotate > 10233) wristRotate = 1023
         packet = comm.moveWristAngleTo(wristRotate, packet)
-        sendSignal(packet)
     }
 
     fun decreaseWristRotate(){
-        wristRotate -= 4
+        wristRotate -= 50
         if(wristRotate < 0) wristRotate = 0
         packet = comm.moveWristAngleTo(wristRotate, packet)
-        sendSignal(packet)
     }
 
     fun increaseWristBend(){
         wristBend += 4
         if(wristBend > 256) wristBend = 256
         packet = comm.rotateWristToDegree(wristBend, packet)
-        sendSignal(packet)
     }
 
     fun decreaseWristBend(){
         wristBend -= 4
         if(wristBend < 0) wristBend = 0
         packet = comm.rotateWristToDegree(wristBend, packet)
-        sendSignal(packet)
     }
 
     fun increaseBaseRotate(){
         baseRotate +=4
         if(baseRotate > 256) baseRotate = 256
         packet = comm.rotateBaseToDegree(baseRotate, packet)
-        sendSignal(packet)
     }
 
     fun decreaseBaseRotate(){
         baseRotate -=4
         if(baseRotate < 0) baseRotate = 0
         packet = comm.rotateBaseToDegree(baseRotate, packet)
-        sendSignal(packet)
     }
 
     fun increaseElbowBend(){
         elbowBend +=4
         if(elbowBend > 256) elbowBend = 256
         packet = comm.rotateElbowToDegree(elbowBend, packet)
-        sendSignal(packet)
     }
 
     fun decreaseElbowBend(){
         elbowBend -=4
         if(elbowBend < 0) elbowBend = 0
         packet = comm.rotateElbowToDegree(elbowBend, packet)
-        sendSignal(packet)
+//        sendSignal(packet)
     }
 
     fun increaseShoulderBend(){
         shoulderBend +=4
         if(shoulderBend > 256) shoulderBend = 256
         packet = comm.rotateShoulderToDegree(shoulderBend, packet)
-        sendSignal(packet)
+//        sendSignal(packet)
     }
 
     fun decreaseShoulderBend(){
         shoulderBend -=4
         if(shoulderBend < 0) shoulderBend = 0
         packet = comm.rotateShoulderToDegree(shoulderBend, packet)
-        sendSignal(packet)
+//        sendSignal(packet)
     }
 
     fun tightenGrip(){
-        gripperTightness +=4
-        if(gripperTightness >256) gripperTightness = 256
+        gripperTightness += 50
+        if(gripperTightness >1023) gripperTightness = 1023
         packet = comm.moveGripper(gripperTightness, packet)
-        sendSignal(packet)
+//        sendSignal(packet)
     }
 
     fun loosenGrip(){
-        gripperTightness -=4
+        gripperTightness -= 50
         if(gripperTightness <0) gripperTightness = 0
         packet = comm.moveGripper(gripperTightness, packet)
-        sendSignal(packet)
+//        sendSignal(packet)
     }
 
     private fun msg(s: String) {
@@ -246,4 +238,5 @@ class MainActivity : AppCompatActivity() {
             progress?.dismiss()
         }
     }
+
 }
