@@ -42,12 +42,6 @@ class MainActivity : AppCompatActivity() {
 
         ConnectBT().execute()
 
-        GlobalScope.launch{
-            while(true) {
-                sendSignal()
-            }
-        }
-
         setContentView(R.layout.activity_main)
         wristDecrease.setOnClickListener {
             decreaseWristRotate()
@@ -75,9 +69,11 @@ class MainActivity : AppCompatActivity() {
         }
         shoulderBendIncrease.setOnClickListener {
             increaseShoulderBend()
+            Log.i("Shoulder", shoulderBend.toString())
         }
         shoulderBendDecrease.setOnClickListener {
             decreaseShoulderBend()
+            Log.i("Shoulder", shoulderBend.toString())
         }
         rotateBaseIncrease.setOnClickListener {
             increaseBaseRotate()
@@ -100,8 +96,11 @@ class MainActivity : AppCompatActivity() {
         if (btSocket != null) {
             try {
                 btSocket.getOutputStream().write(packet)
+//                Log.i("Packet 4", shoulderBend.toString())
+                Log.i("Packet 4", packet[4].toInt().toString())
+
             } catch (e: IOException) {
-                msg("Error sending")
+//                msg("Error sending")
             }
         }
     }
@@ -234,6 +233,12 @@ class MainActivity : AppCompatActivity() {
             } else {
                 msg("Connected")
                 isBtConnected = true
+
+                GlobalScope.launch{
+                    while(true) {
+                        sendSignal()
+                    }
+                }
             }
             progress?.dismiss()
         }
