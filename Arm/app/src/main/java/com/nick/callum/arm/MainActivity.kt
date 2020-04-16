@@ -22,10 +22,10 @@ class MainActivity : AppCompatActivity() {
     private val comm = Comm()
     private var packet = comm.getBasePacket()
     private var wristRotate = 512
-    private var wristBend = 128
-    private var elbowBend = 128
-    private var shoulderBend = 128
-    private var baseRotate = 128
+    private var wristBend = 512
+    private var elbowBend = 512
+    private var shoulderBend = 512
+    private var baseRotate = 512
     private var gripperTightness = 512
     private var progress: ProgressDialog? = null
     var myBluetooth: BluetoothAdapter? = null
@@ -69,11 +69,9 @@ class MainActivity : AppCompatActivity() {
         }
         shoulderBendIncrease.setOnClickListener {
             increaseShoulderBend()
-            Log.i("Shoulder", shoulderBend.toString())
         }
         shoulderBendDecrease.setOnClickListener {
             decreaseShoulderBend()
-            Log.i("Shoulder", shoulderBend.toString())
         }
         rotateBaseIncrease.setOnClickListener {
             increaseBaseRotate()
@@ -96,9 +94,6 @@ class MainActivity : AppCompatActivity() {
         if (btSocket != null) {
             try {
                 btSocket.getOutputStream().write(packet)
-//                Log.i("Packet 4", shoulderBend.toString())
-                Log.i("Packet 4", packet[4].toInt().toString())
-
             } catch (e: IOException) {
 //                msg("Error sending")
             }
@@ -115,7 +110,7 @@ class MainActivity : AppCompatActivity() {
 
     fun increaseWristRotate(){
         wristRotate += 50
-        if(wristRotate > 10233) wristRotate = 1023
+        if(wristRotate > 1023) wristRotate = 1023
         packet = comm.moveWristAngleTo(wristRotate, packet)
     }
 
@@ -126,51 +121,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun increaseWristBend(){
-        wristBend += 4
-        if(wristBend > 256) wristBend = 256
+        wristBend += 50
+        if(wristBend > 1023) wristBend = 1023
         packet = comm.rotateWristToDegree(wristBend, packet)
     }
 
     fun decreaseWristBend(){
-        wristBend -= 4
+        wristBend -= 50
         if(wristBend < 0) wristBend = 0
         packet = comm.rotateWristToDegree(wristBend, packet)
     }
 
     fun increaseBaseRotate(){
-        baseRotate +=4
-        if(baseRotate > 256) baseRotate = 256
+        baseRotate +=50
+        if(baseRotate > 1023) baseRotate = 1023
         packet = comm.rotateBaseToDegree(baseRotate, packet)
     }
 
     fun decreaseBaseRotate(){
-        baseRotate -=4
+        baseRotate -=50
         if(baseRotate < 0) baseRotate = 0
         packet = comm.rotateBaseToDegree(baseRotate, packet)
     }
 
     fun increaseElbowBend(){
-        elbowBend +=4
-        if(elbowBend > 256) elbowBend = 256
+        elbowBend +=50
+        if(elbowBend > 1023) elbowBend = 1023
         packet = comm.rotateElbowToDegree(elbowBend, packet)
     }
 
     fun decreaseElbowBend(){
-        elbowBend -=4
+        elbowBend -=50
         if(elbowBend < 0) elbowBend = 0
         packet = comm.rotateElbowToDegree(elbowBend, packet)
 //        sendSignal(packet)
     }
 
     fun increaseShoulderBend(){
-        shoulderBend +=4
-        if(shoulderBend > 256) shoulderBend = 256
+        shoulderBend +=50
+        if(shoulderBend > 1023) shoulderBend = 1023
         packet = comm.rotateShoulderToDegree(shoulderBend, packet)
 //        sendSignal(packet)
     }
 
     fun decreaseShoulderBend(){
-        shoulderBend -=4
+        shoulderBend -=50
         if(shoulderBend < 0) shoulderBend = 0
         packet = comm.rotateShoulderToDegree(shoulderBend, packet)
 //        sendSignal(packet)
