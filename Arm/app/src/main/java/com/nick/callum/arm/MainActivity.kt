@@ -22,11 +22,11 @@ class MainActivity : AppCompatActivity() {
     private val comm = Comm()
     private var packet = comm.getBasePacket()
     private var wristRotate = 512
-    private var wristBend = 512
-    private var elbowBend = 512
-    private var shoulderBend = 512
+    private var wristBend = 515
+    private var elbowBend = 555
+    private var shoulderBend = 507
     private var baseRotate = 512
-    private var gripperTightness = 512
+    private var gripperTightness = 256
     private var progress: ProgressDialog? = null
     var myBluetooth: BluetoothAdapter? = null
     var btSocket: BluetoothSocket? = null
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    suspend private fun sendSignal() {
+    private fun sendSignal(packet) {
         val btSocket = btSocket
         if (btSocket != null) {
             try {
@@ -112,77 +112,84 @@ class MainActivity : AppCompatActivity() {
         wristRotate += 50
         if(wristRotate > 1023) wristRotate = 1023
         packet = comm.moveWristAngleTo(wristRotate, packet)
+        sendSignal(packet)
     }
 
     fun decreaseWristRotate(){
         wristRotate -= 50
         if(wristRotate < 0) wristRotate = 0
         packet = comm.moveWristAngleTo(wristRotate, packet)
+        sendSignal(packet)
     }
 
     fun increaseWristBend(){
         wristBend += 50
-        if(wristBend > 1023) wristBend = 1023
+        if(wristBend > 830) wristBend = 830
         packet = comm.rotateWristToDegree(wristBend, packet)
+        sendSignal(packet)
     }
 
     fun decreaseWristBend(){
         wristBend -= 50
-        if(wristBend < 0) wristBend = 0
+        if(wristBend < 200) wristBend = 200
         packet = comm.rotateWristToDegree(wristBend, packet)
+        sendSignal(packet)
     }
 
     fun increaseBaseRotate(){
         baseRotate +=50
         if(baseRotate > 1023) baseRotate = 1023
         packet = comm.rotateBaseToDegree(baseRotate, packet)
+        sendSignal(packet)
     }
 
     fun decreaseBaseRotate(){
         baseRotate -=50
         if(baseRotate < 0) baseRotate = 0
         packet = comm.rotateBaseToDegree(baseRotate, packet)
+        sendSignal(packet)
     }
 
     fun increaseElbowBend(){
         elbowBend +=50
-        if(elbowBend > 1023) elbowBend = 1023
+        if(elbowBend > 900) elbowBend = 900
         packet = comm.rotateElbowToDegree(elbowBend, packet)
+        sendSignal(packet)
     }
 
     fun decreaseElbowBend(){
         elbowBend -=50
-        if(elbowBend < 0) elbowBend = 0
+        if(elbowBend < 210) elbowBend = 210
         packet = comm.rotateElbowToDegree(elbowBend, packet)
-//        sendSignal(packet)
+        sendSignal(packet)
     }
 
     fun increaseShoulderBend(){
         shoulderBend +=50
-        if(shoulderBend > 1023) shoulderBend = 1023
+        if(shoulderBend > 810) shoulderBend = 810
         packet = comm.rotateShoulderToDegree(shoulderBend, packet)
-//        sendSignal(packet)
+        sendSignal(packet)
     }
 
     fun decreaseShoulderBend(){
         shoulderBend -=50
-        if(shoulderBend < 0) shoulderBend = 0
+        if(shoulderBend < 205) shoulderBend = 205
         packet = comm.rotateShoulderToDegree(shoulderBend, packet)
-//        sendSignal(packet)
+        sendSignal(packet)
     }
 
     fun tightenGrip(){
         gripperTightness += 50
-        if(gripperTightness >1023) gripperTightness = 1023
+        if(gripperTightness >512) gripperTightness = 512
         packet = comm.moveGripper(gripperTightness, packet)
-//        sendSignal(packet)
+        sendSignal(packet)
     }
 
     fun loosenGrip(){
         gripperTightness -= 50
         if(gripperTightness <0) gripperTightness = 0
         packet = comm.moveGripper(gripperTightness, packet)
-//        sendSignal(packet)
+        sendSignal(packet)
     }
 
     private fun msg(s: String) {
@@ -229,11 +236,11 @@ class MainActivity : AppCompatActivity() {
                 msg("Connected")
                 isBtConnected = true
 
-                GlobalScope.launch{
-                    while(true) {
-                        sendSignal()
-                    }
-                }
+//                GlobalScope.launch{
+//                    while(true) {
+//                        sendSignal()
+//                    }
+//                }
             }
             progress?.dismiss()
         }
